@@ -12,15 +12,18 @@ class Accudio_Invite_Users_Admin {
   public static function page_load()
   {
     Accudio_Invite_Users_Options::option_handler();
-    self::admin_styles();
+    add_action('admin_head', 'Accudio_Invite_Users_Admin::admin_styles');
   }
 
-  private static function admin_styles()
+  public static function admin_styles()
   {
     ?>
     <style>
       .accudio-invite-users .input-group {
         margin: 1rem 0;
+      }
+      .accudio-invite-users .input-group.checkbox {
+        width: 300px;
       }
       .accudio-invite-users label {
         display: block;
@@ -32,12 +35,13 @@ class Accudio_Invite_Users_Admin {
         display: inline-block;
         margin-right: 4rem;
       }
-      .accudio-invite-users input {
+      .accudio-invite-users input:not([type="checkbox"]), .accudio-invite-users select {
         display: block;
         min-width: 300px;
       }
       .accudio-invite-users input[type="checkbox"] {
-        vertical-align: -4px;
+        float: right;
+        margin-top: 1px;
       }
       .accudio-invite-users textarea {
         display: block;
