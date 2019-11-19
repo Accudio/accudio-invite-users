@@ -29,7 +29,9 @@ class Accudio_Invite_Users_Options {
       'accudioiu_registration_username'   => 'Username',
       'accudioiu_advanced_login'          => '/wp-admin/',
       'accudioiu_advanced_lost_password'  => '/wp-login.php?action=lostpassword',
-      'accudioiu_advanced_username'       => false
+      'accudioiu_advanced_username'       => false,
+      'accudioiu_advanced_email'          => false,
+      'accudioiu_advanced_role'           => 'default'
     ];
     return get_option($key) ?: ($defaults[$key] ?? '');
   }
@@ -66,7 +68,9 @@ class Accudio_Invite_Users_Options {
   private static function advanced_settings()
   {
     if (isset($_POST['accudioiu-advanced'])) {
-      update_option('accudioiu_advanced_username', sanitize_text_field($_POST['accudioiu-username']));
+      update_option('accudioiu_advanced_username', sanitize_text_field($_POST['accudioiu-username'] ?? 0));
+      update_option('accudioiu_advanced_email', sanitize_text_field($_POST['accudioiu-advanced-email'] ?? 0));
+      update_option('accudioiu_advanced_role', sanitize_text_field($_POST['accudioiu-role']));
       update_option('accudioiu_advanced_redirect', sanitize_text_field($_POST['accudioiu-redirect']));
       update_option('accudioiu_advanced_login', sanitize_text_field($_POST['accudioiu-login']));
       update_option('accudioiu_advanced_lost_password', sanitize_text_field($_POST['accudioiu-lost-password']));

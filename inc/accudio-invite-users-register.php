@@ -9,10 +9,11 @@ class Accudio_Invite_Users_Register {
 
       if ($email) {
         $custom_username = Accudio_Invite_Users_Options::get('accudioiu_advanced_username');
+        $email_verification = Accudio_Invite_Users_Options::get('accudioiu_advanced_email');
         $user_exists = false;
 
         if (isset($_POST['accudioiu-register'])) {
-          $error = self::register($email, $custom_username);
+          $error = self::register($email, $custom_username, $email_verification);
           if (!$error) {
             $user_exists = true;
             delete_option('accudioiu_invite_' . $invite_id);
@@ -22,6 +23,7 @@ class Accudio_Invite_Users_Register {
         self::page_header();
 
         if ($user_exists && empty($error)) {
+          wp_new_user_notification(get_user_by('email', $email)->ID);
           self::confirm($email);
 
         } else {
@@ -30,7 +32,7 @@ class Accudio_Invite_Users_Register {
             $error = '';
           }
 
-          self::output_form($email, $custom_username);
+          self::output_form($email, $custom_username, $email_verification);
         }
 
         self::page_footer();
@@ -44,8 +46,13 @@ class Accudio_Invite_Users_Register {
     }
   }
 
-  private static function register($email, $custom_username)
+  private static function register($email, $custom_username, $email_verification)
   {
+    if ($email_verification) {
+      if (!isset($_POST['accudioiu-email']) || sanitize_email($_POST['accudioiu-email']) !== $email) {
+        return 'Please confirm the email address the invite was sent to. You can change your email address once an account has been created.';
+      }
+    }
     $first_name = isset($_POST['accudioiu-first-name']) ? sanitize_text_field($_POST['accudioiu-first-name']) : '';
     $last_name = isset($_POST['accudioiu-last-name']) ? sanitize_text_field($_POST['accudioiu-last-name']) : '';
     $username = $custom_username ? sanitize_text_field($_POST['accudioiu-username']) : $email;
@@ -58,6 +65,12 @@ class Accudio_Invite_Users_Register {
       'nickname'      => $first_name,
       'display_name'  => $first_name . ' ' . $last_name
     ];
+
+    $role = Accudio_Invite_Users_Options::get('accudioiu_advanced_role');
+    if ($role !== 'default') {
+      $user_data['role'] = $role;
+    }
+
     $user = wp_insert_user($user_data);
     if (!is_wp_error($user)) {
       return false;
@@ -98,18 +111,22 @@ class Accudio_Invite_Users_Register {
     }
   }
 
-  private static function output_form($email, $custom_username)
+  private static function output_form($email, $custom_username, $email_verification)
   {
     ?>
     <input type="hidden" name="accudioiu-register" value="1" />
     <p>
       <label for="email"><?= Accudio_Invite_Users_Options::get('accudioiu_registration_email') ?></label><br>
-      <input id="email" type="email" name="accudioiu-email" class="input" size="20" readonly disabled value="<?= $email ?>" style="cursor: not-allowed;">
+      <?php if ($email_verification) { ?>
+        <input id="email" type="email" name="accudioiu-email" class="input" size="20" value="<?= $_POST['accudioiu-email'] ?? '' ?>">
+      <?php } else { ?>
+        <input id="email" type="email" name="accudioiu-email" class="input" size="20" readonly disabled value="<?= $email ?>" style="cursor: not-allowed;">
+      <?php } ?>
     </p>
     <?php if ($custom_username) { ?>
       <p>
         <label for="username"><?= Accudio_Invite_Users_Options::get('accudioiu_registration_username') ?></label><br>
-        <input id="username" type="text" name="accudioiu-username" class="input" size="20" value="" required>
+        <input id="username" type="text" name="accudioiu-username" class="input" size="20" value="<?= $_POST['accudioiu-username'] ?? '' ?>" required>
       </p>
     <?php } ?>
     <p>
@@ -118,11 +135,11 @@ class Accudio_Invite_Users_Register {
     </p>
     <p>
       <label for="first-name"><?= Accudio_Invite_Users_Options::get('accudioiu_registration_first_name') ?></label><br>
-      <input id="first-name" type="text" name="accudioiu-first-name" class="input" value="" size="20" required>
+      <input id="first-name" type="text" name="accudioiu-first-name" class="input" value="<?= $_POST['accudioiu-first-name'] ?? '' ?>" size="20" required>
     </p>
     <p>
       <label for="last-name"><?= Accudio_Invite_Users_Options::get('accudioiu_registration_last_name') ?></label><br>
-      <input id="last-name" type="text" name="accudioiu-last-name" class="input" value="" size="20" required>
+      <input id="last-name" type="text" name="accudioiu-last-name" class="input" value="<?= $_POST['accudioiu-last-name'] ?? '' ?>" size="20" required>
     </p>
     <p class="submit">
       <input type="submit" name="wp-submit" id="wp-submit" class="button button-primary button-large" value="<?= Accudio_Invite_Users_Options::get('accudioiu_registration_submit') ?>" />
