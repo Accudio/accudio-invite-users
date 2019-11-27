@@ -9,7 +9,7 @@
  * Plugin Name:       Accudio Invite Users
  * Plugin URI:        https://github.com/Accudio/accudio-invite-users
  * Description:       Adds customisable interface for inviting users by email to create an account.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Author:            Alistair Shepherd — Accudio
  * Author URI:        https://alistairshepherd.uk
  * License:           MPL-2.0
