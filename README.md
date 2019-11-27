@@ -19,6 +19,7 @@ A working installation of [Wordpress][wordpressurl], v1.0.0 of the plugin has be
 
 ## Version History
 
+- v1.1.1 - Fixed breaking error when PHP version is less than 7.1
 - v1.1.0 - Fixes and advanced option additions
 - v1.0.0 - Plugin completed and moved from testing
 
