@@ -1,7 +1,7 @@
 <?php
 
 class Accudio_Invite_Users_Admin {
-  private const SLUG = 'accudio_invite_users';
+  const SLUG = 'accudio_invite_users';
 
   public static function add_menus()
   {
